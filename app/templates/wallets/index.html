@@ -1,0 +1,377 @@
+{% extends "base.html" %}
+
+{% block title %}
+    My Wallets · Wallet Recovery
+{% endblock %}
+
+{% block page_heading %}
+    My Wallets
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header-row">
+
+    <div>
+        <span class="eyebrow">
+            WALLET MANAGEMENT
+        </span>
+
+        <h1 class="page-title">
+            My Wallets
+        </h1>
+
+        <p class="page-subtitle">
+            Manage your wallets, balances, recovery status, and wallet activity.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('wallets.add') }}"
+        class="btn btn-primary btn-large"
+    >
+        + Add Wallet
+    </a>
+
+</div>
+
+
+{% if wallet_data %}
+
+<div class="wallet-summary-grid">
+
+    <div class="wallet-summary-mini">
+        <span>
+            Total Wallets
+        </span>
+
+        <strong>
+            {{ wallet_data|length }}
+        </strong>
+    </div>
+
+
+    <div class="wallet-summary-mini">
+        <span>
+            Current Balance
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(
+                wallet_data
+                |map(attribute="wallet.balance")
+                |map("float")
+                |sum
+            ) }}
+        </strong>
+    </div>
+
+
+    <div class="wallet-summary-mini">
+        <span>
+            Recoverable Value
+        </span>
+
+        <strong>
+            ₹{{ "%.2f"|format(
+                wallet_data
+                |map(attribute="remaining_recoverable")
+                |map("float")
+                |sum
+            ) }}
+        </strong>
+    </div>
+
+</div>
+
+
+<div class="wallet-grid">
+
+    {% for item in wallet_data %}
+
+        {% set wallet = item.wallet %}
+
+        <article class="wallet-card">
+
+            <div class="wallet-card-header">
+
+                <div class="wallet-identity">
+
+                    <div class="wallet-avatar">
+                        {{ wallet.name[:2]|upper }}
+                    </div>
+
+                    <div>
+
+                        <h2>
+                            {{ wallet.name }}
+                        </h2>
+
+                        <p>
+                            {{ wallet.provider }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <span class="status-badge status-{{ wallet.status }}">
+                    {{ wallet.status.replace("_", " ")|title }}
+                </span>
+
+            </div>
+
+
+            <div class="wallet-balance-panel">
+
+                <span>
+                    Current Balance
+                </span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(wallet.balance|float) }}
+                </strong>
+
+                <small>
+                    Minimum balance:
+                    ₹{{ "%.2f"|format(wallet.minimum_balance|float) }}
+                </small>
+
+            </div>
+
+
+            <div class="wallet-value-list">
+
+                <div class="wallet-value-row">
+
+                    <span>
+                        Recoverable Surplus
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(
+                            item.stranded_balance|float
+                        ) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="wallet-value-row">
+
+                    <span>
+                        Total Recovered
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(
+                            item.recovered_amount|float
+                        ) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="wallet-value-row highlight">
+
+                    <span>
+                        Remaining Recoverable
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(
+                            item.remaining_recoverable|float
+                        ) }}
+                    </strong>
+
+                </div>
+
+
+                {% if item.trapped_value|float > 0 %}
+
+                    <div class="wallet-value-row trapped">
+
+                        <span>
+                            Potentially Trapped
+                        </span>
+
+                        <strong>
+                            ₹{{ "%.2f"|format(
+                                item.trapped_value|float
+                            ) }}
+                        </strong>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="wallet-actions">
+
+                {% if wallet.status == "active" %}
+
+                    {% if item.remaining_recoverable|float > 0 %}
+
+                        <a
+                            href="{{ url_for(
+                                'recovery.request_recovery',
+                                wallet_id=wallet.id
+                            ) }}"
+                            class="btn btn-primary"
+                        >
+                            Recover Surplus
+                        </a>
+
+                    {% endif %}
+
+
+                    <a
+                        href="{{ url_for(
+                            'wallets.add_money',
+                            wallet_id=wallet.id
+                        ) }}"
+                        class="btn btn-secondary"
+                    >
+                        Add Money
+                    </a>
+
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'wallets.toggle_exit',
+                            wallet_id=wallet.id
+                        ) }}"
+                        class="wallet-inline-form"
+                    >
+
+                        {{ status_form.hidden_tag() }}
+
+                        <button
+                            type="submit"
+                            class="btn btn-ghost"
+                        >
+                            Request Exit
+                        </button>
+
+                    </form>
+
+                {% elif wallet.status == "exit_requested" %}
+
+                    {% if item.trapped_value|float > 0 %}
+
+                        <a
+                            href="{{ url_for(
+                                'recovery.exit_recovery',
+                                wallet_id=wallet.id
+                            ) }}"
+                            class="btn btn-primary"
+                        >
+                            Retrieve Trapped Value
+                        </a>
+
+                    {% endif %}
+
+
+                    <form
+                        method="POST"
+                        action="{{ url_for(
+                            'wallets.toggle_exit',
+                            wallet_id=wallet.id
+                        ) }}"
+                        class="wallet-inline-form"
+                    >
+
+                        {{ status_form.hidden_tag() }}
+
+                        <button
+                            type="submit"
+                            class="btn btn-secondary"
+                        >
+                            Resume Wallet
+                        </button>
+
+                    </form>
+
+                {% else %}
+
+                    <span class="wallet-closed-label">
+                        Wallet Closed
+                    </span>
+
+                {% endif %}
+
+
+                <a
+                    href="{{ url_for(
+                        'wallets.transactions',
+                        wallet_id=wallet.id
+                    ) }}"
+                    class="btn btn-secondary"
+                >
+                    Activity
+                </a>
+
+            </div>
+
+        </article>
+
+    {% endfor %}
+
+</div>
+
+
+{% else %}
+
+<div class="empty-state">
+
+    <div class="empty-wallet-icon">
+        +
+    </div>
+
+    <h3>
+        No wallets yet
+    </h3>
+
+    <p>
+        Add your first simulated digital wallet to begin tracking balances
+        and recoverable value.
+    </p>
+
+    <a
+        href="{{ url_for('wallets.add') }}"
+        class="btn btn-primary"
+    >
+        + Add Your First Wallet
+    </a>
+
+</div>
+
+{% endif %}
+
+
+<div class="wallet-info-strip">
+
+    <div class="wallet-info-icon">
+        ✓
+    </div>
+
+    <div>
+
+        <strong>
+            Wallet data is private
+        </strong>
+
+        <p>
+            Your wallets and wallet activity are associated with your account
+            and are not visible to other users.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

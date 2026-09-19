@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Dashboard · Wallet Recovery
+{% endblock %}
+
+{% block page_heading %}
+    Dashboard
+{% endblock %}
+
+{% block content %}
+
+<!-- =========================================================
+     PAGE INTRO
+     ========================================================= -->
+
+<div class="page-header-row">
+
+    <div>
+
+        <span class="eyebrow">
+            YOUR WALLET OVERVIEW
+        </span>
+
+        <h2 class="page-title">
+            Welcome back, {{ current_user.username }}
+        </h2>
+
+        <p class="page-subtitle">
+            Here's an overview of your wallet balances and recovery activity.
+        </p>
+
+    </div>
+
+</div>
+
+
+{% set ns = namespace(
+    balance=0,
+    recoverable=0,
+    recovered=0,
+    transactions=0
+) %}
+
+
+<!-- =========================================================
+     CALCULATE WALLET TOTALS
+     ========================================================= -->
+
+{% for wallet in current_user.wallets %}
+
+    {% set ns.balance =
+        ns.balance + (wallet.balance or 0)|float
+    %}
+
+    {% if wallet.balance > wallet.minimum_balance %}
+
+        {% set surplus =
+            wallet.balance - wallet.minimum_balance
+        %}
+
+        {% set ns.recoverable =
+            ns.recoverable + surplus|float
+        %}
+
+    {% endif %}
+
+{% endfor %}
+
+
+<!-- =========================================================
+     CALCULATE RECOVERY TOTALS
+     ========================================================= -->
+
+{% for transaction in current_user.recovery_transactions %}
+
+    {% set ns.recovered =
+        ns.recovered + (transaction.amount or 0)|float
+    %}
+
+    {% set ns.transactions =
+        ns.transactions + 1
+    %}
+
+{% endfor %}
+
+
+<!-- =========================================================
+     SUMMARY
+     ========================================================= -->
+
+<div class="metric-grid">
+
+    <article class="metric-card">
+
+        <span class="metric-label">
+            Total Wallets
+        </span>
+
+        <strong class="metric-value">
+            {{ current_user.wallets|length }}
+        </strong>
+
+    </article>
+
+
+    <article class="metric-card">
+
+        <span class="metric-label">
+            Current Balance
+        </span>
+
+        <strong class="metric-value">
+            ₹{{ "%.2f"|format(ns.balance) }}
+        </strong>
+
+    </article>
+
+
+    <article class="metric-card">
+
+        <span class="metric-label">
+            Recoverable Surplus
+        </span>
+
+        <strong class="metric-value">
+            ₹{{ "%.2f"|format(ns.recoverable) }}
+        </strong>
+
+    </article>
+
+
+    <article class="metric-card">
+
+        <span class="metric-label">
+            Total Recovered
+        </span>
+
+        <strong class="metric-value">
+            ₹{{ "%.2f"|format(ns.recovered) }}
+        </strong>
+
+    </article>
+
+
+    <article class="metric-card">
+
+        <span class="metric-label">
+            Remaining Recoverable
+        </span>
+
+        <strong class="metric-value">
+            ₹{{ "%.2f"|format(ns.recoverable) }}
+        </strong>
+
+    </article>
+
+</div>
+
+
+<!-- =========================================================
+     RECOVERY TRANSACTION SUMMARY
+     ========================================================= -->
+
+<div class="content-card" style="margin-bottom: 30px;">
+
+    <div class="card-header" style="margin-bottom: 0;">
+
+        <div>
+
+            <span class="metric-label">
+                Recovery Activity
+            </span>
+
+            <h2 style="margin: 0;">
+                Recovery Transactions
+            </h2>
+
+        </div>
+
+        <strong
+            class="metric-value"
+            style="font-size: 30px;"
+        >
+            {{ ns.transactions }}
+        </strong>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     QUICK ACCESS
+     ========================================================= -->
+
+<div class="section-heading">
+
+    <span class="eyebrow">
+        QUICK ACCESS
+    </span>
+
+    <h2>
+        Manage your wallet recovery
+    </h2>
+
+    <p>
+        Use the sections below to manage wallets, review recoverable value,
+        and track your recovery activity.
+    </p>
+
+</div>
+
+
+<div
+    class="dashboard-grid"
+    style="margin-top: 28px;"
+>
+
+    <!-- =====================================================
+         WALLETS
+         ===================================================== -->
+
+    <article class="feature-card">
+
+        <div class="step-icon">
+            ▣
+        </div>
+
+        <h3>
+            Manage Your Wallets
+        </h3>
+
+        <p>
+            Add wallets, update balances, add money, and review wallet
+            activity.
+        </p>
+
+        <a
+            href="{{ url_for('wallets.index') }}"
+            class="btn btn-primary"
+        >
+            View Wallets
+        </a>
+
+    </article>
+
+
+    <!-- =====================================================
+         STRANDED VALUE
+         ===================================================== -->
+
+    <article class="feature-card">
+
+        <div class="step-icon">
+            ◈
+        </div>
+
+        <h3>
+            Find Recoverable Value
+        </h3>
+
+        <p>
+            Review recoverable surplus and potentially trapped wallet value.
+        </p>
+
+        <a
+            href="{{ url_for('wallets.stranded') }}"
+            class="btn btn-primary"
+        >
+            View Wallet Analysis
+        </a>
+
+    </article>
+
+
+    <!-- =====================================================
+         RECOVERY HISTORY
+         ===================================================== -->
+
+    <article class="feature-card">
+
+        <div class="step-icon">
+            ↗
+        </div>
+
+        <h3>
+            Recovery History
+        </h3>
+
+        <p>
+            Review completed surplus and exit recovery transactions.
+        </p>
+
+        <a
+            href="{{ url_for('recovery.transactions') }}"
+            class="btn btn-primary"
+        >
+            View Transactions
+        </a>
+
+    </article>
+
+</div>
+
+
+<!-- =========================================================
+     PRIVACY
+     ========================================================= -->
+
+<div
+    class="security-card"
+    style="margin-top: 30px;"
+>
+
+    <div class="security-icon">
+        ✓
+    </div>
+
+    <div>
+
+        <span class="security-label">
+            PRIVACY & DATA ISOLATION
+        </span>
+
+        <h2>
+            Your Wallet Data Is Private
+        </h2>
+
+        <p>
+            Your account, wallets, balances, and recovery transactions are
+            isolated from other users.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

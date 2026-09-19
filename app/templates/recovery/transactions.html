@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+
+{% block title %}Recovery Transactions - Wallet Recovery{% endblock %}
+
+{% block content %}
+
+{% set total_recovered = namespace(value=0) %}
+{% set completed_count = namespace(value=0) %}
+{% set recovery_types = namespace(values=[]) %}
+
+{% for transaction in transactions %}
+
+    {% set total_recovered.value = total_recovered.value + transaction.amount|float %}
+
+    {% if transaction.status == "completed" %}
+        {% set completed_count.value = completed_count.value + 1 %}
+    {% endif %}
+
+    {% if transaction.recovery_type not in recovery_types.values %}
+        {% set recovery_types.values = recovery_types.values + [transaction.recovery_type] %}
+    {% endif %}
+
+{% endfor %}
+
+
+<!-- PAGE HEADER -->
+
+<div
+    class="page-header"
+    style="
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 24px;
+    "
+>
+
+    <div>
+
+        <p class="eyebrow">RECOVERY</p>
+
+        <h1>Recovery Transactions</h1>
+
+        <p>
+            Review your completed surplus and wallet exit
+            recovery activity.
+        </p>
+
+    </div>
+
+
+    <div style="flex-shrink: 0;">
+
+        <a
+            href="{{ url_for('recovery.options') }}"
+            class="btn btn-primary"
+        >
+            New Recovery
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- SUMMARY -->
+
+<div class="metric-grid">
+
+    <div class="metric-card">
+
+        <div class="metric-icon">≡</div>
+
+        <span>Total Transactions</span>
+
+        <strong>
+            {{ transactions|length }}
+        </strong>
+
+        <small>
+            Recovery operations recorded
+        </small>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <div class="metric-icon">₹</div>
+
+        <span>Total Recovered</span>
+
+        <strong>
+            ₹{{ "%.2f"|format(total_recovered.value) }}
+        </strong>
+
+        <small>
+            Total value recovered
+        </small>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <div class="metric-icon">✓</div>
+
+        <span>Completed</span>
+
+        <strong>
+            {{ completed_count.value }}
+        </strong>
+
+        <small>
+            Successfully processed
+        </small>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <div class="metric-icon">↗</div>
+
+        <span>Recovery Types</span>
+
+        <strong>
+            {{ recovery_types.values|length }}
+        </strong>
+
+        <small>
+            Different recovery flows
+        </small>
+
+    </div>
+
+</div>
+
+
+<!-- TRANSACTION TABLE -->
+
+<section class="content-card table-card">
+
+    <div class="card-heading">
+
+        <div>
+
+            <p class="eyebrow">
+                ACTIVITY
+            </p>
+
+            <h2>
+                Recovery History
+            </h2>
+
+        </div>
+
+
+        <span class="record-count">
+
+            {{ transactions|length }}
+
+            record{% if transactions|length != 1 %}s{% endif %}
+
+        </span>
+
+    </div>
+
+
+    {% if transactions %}
+
+        <div class="table-wrap">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>Reference</th>
+                        <th>Type</th>
+                        <th>Wallet</th>
+                        <th>Recovery Method</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for transaction in transactions %}
+
+                    <tr>
+
+                        <td>
+
+                            <strong class="reference-code">
+                                {{ transaction.reference_code }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if transaction.recovery_type == "exit" %}
+
+                                <span class="type-badge type-exit">
+                                    Exit Recovery
+                                </span>
+
+                            {% else %}
+
+                                <span class="type-badge type-surplus">
+                                    Surplus Recovery
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="table-primary">
+                                {{ transaction.wallet.name }}
+                            </div>
+
+                            <div class="table-secondary">
+                                {{ transaction.wallet.provider }}
+                            </div>
+
+                        </td>
+
+
+                        <td>
+                            {{ transaction.recovery_option.name }}
+                        </td>
+
+
+                        <td>
+
+                            <strong class="amount-cell">
+                                ₹{{ "%.2f"|format(transaction.amount|float) }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            {% if transaction.status == "completed" %}
+
+                                <span class="status-pill status-completed">
+                                    Completed
+                                </span>
+
+                            {% elif transaction.status == "exit_requested" %}
+
+                                <span class="status-pill status-warning">
+                                    Exit Requested
+                                </span>
+
+                            {% else %}
+
+                                <span class="status-pill">
+                                    {{ transaction.status|replace("_", " ")|title }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="table-primary">
+                                {{ transaction.created_at.strftime("%d %b %Y") }}
+                            </div>
+
+                            <div class="table-secondary">
+                                {{ transaction.created_at.strftime("%I:%M %p") }}
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-state-icon">
+                ≡
+            </div>
+
+            <h3>
+                No recovery transactions yet
+            </h3>
+
+            <p>
+                Once you recover surplus value or retrieve
+                trapped wallet value, your recovery history
+                will appear here.
+            </p>
+
+            <a
+                href="{{ url_for('recovery.options') }}"
+                class="btn btn-primary"
+            >
+                Explore Recovery Options
+            </a>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- INFORMATION -->
+
+<div class="info-strip">
+
+    <div class="info-strip-icon">
+        ✓
+    </div>
+
+    <div>
+
+        <strong>
+            Your recovery history is account-specific
+        </strong>
+
+        <p>
+            Only recovery transactions belonging to your
+            currently signed-in account are displayed here.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

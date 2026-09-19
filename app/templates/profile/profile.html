@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}
+    My Profile · Wallet Recovery
+{% endblock %}
+
+{% block page_heading %}
+    My Profile
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header-row">
+
+    <div>
+
+        <span class="eyebrow">
+            ACCOUNT
+        </span>
+
+        <h1 class="page-title">
+            My Profile
+        </h1>
+
+        <p class="page-subtitle">
+            Your account information and wallet recovery identity.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="profile-layout">
+
+    <section class="profile-card">
+
+        <div class="profile-card-top">
+
+            <div class="profile-avatar">
+                {{ current_user.username[:1]|upper }}
+            </div>
+
+            <div>
+
+                <span class="eyebrow">
+                    PERSONAL ACCOUNT
+                </span>
+
+                <h2>
+                    {{ current_user.username }}
+                </h2>
+
+                <p>
+                    Your Wallet Recovery account
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="profile-details">
+
+            <div class="profile-row">
+
+                <div class="profile-row-label">
+
+                    <span class="profile-row-icon">
+                        ◉
+                    </span>
+
+                    <span>
+                        Username
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ current_user.username }}
+                </strong>
+
+            </div>
+
+
+            <div class="profile-row">
+
+                <div class="profile-row-label">
+
+                    <span class="profile-row-icon">
+                        @
+                    </span>
+
+                    <span>
+                        Email
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ current_user.email }}
+                </strong>
+
+            </div>
+
+
+            <div class="profile-row">
+
+                <div class="profile-row-label">
+
+                    <span class="profile-row-icon">
+                        #
+                    </span>
+
+                    <span>
+                        User ID
+                    </span>
+
+                </div>
+
+                <strong>
+                    {{ current_user.id }}
+                </strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <aside class="profile-side-card">
+
+        <div class="side-info-icon">
+            ✓
+        </div>
+
+        <span class="eyebrow">
+            ACCOUNT PRIVACY
+        </span>
+
+        <h2>
+            Your account stays yours.
+        </h2>
+
+        <p>
+            Your profile, wallets, balances, and recovery transactions are
+            associated with your account and are kept separate from other
+            users.
+        </p>
+
+        <div class="privacy-check">
+
+            <span>
+                ✓
+            </span>
+
+            <div>
+                <strong>
+                    Private wallet data
+                </strong>
+
+                <small>
+                    Other users cannot access your wallet information.
+                </small>
+            </div>
+
+        </div>
+
+
+        <div class="privacy-check">
+
+            <span>
+                ✓
+            </span>
+
+            <div>
+                <strong>
+                    Personal activity
+                </strong>
+
+                <small>
+                    Recovery transactions belong to your account.
+                </small>
+            </div>
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

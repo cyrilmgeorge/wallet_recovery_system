@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% block title %}Recover Surplus - Wallet Recovery{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <p class="eyebrow">RECOVERY</p>
+        <h1>Recover Surplus</h1>
+        <p>
+            Convert the available surplus from your wallet into a
+            selected recovery option.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('recovery.options') }}"
+        class="btn btn-secondary"
+    >
+        ← Back to Recovery
+    </a>
+</div>
+
+
+<div class="form-layout">
+
+    <!-- LEFT: RECOVERY FORM -->
+    <section class="content-card">
+
+        <div class="card-heading">
+            <div>
+                <p class="eyebrow">RECOVERY REQUEST</p>
+                <h2>{{ wallet.name }}</h2>
+                <p>{{ wallet.provider }}</p>
+            </div>
+
+            <span class="status-pill status-active">
+                {{ wallet.status|replace("_", " ")|title }}
+            </span>
+        </div>
+
+
+        <div class="wallet-summary-banner">
+
+            <div>
+                <span>Current Balance</span>
+                <strong>
+                    ₹{{ "%.2f"|format(wallet.balance|float) }}
+                </strong>
+            </div>
+
+            <div>
+                <span>Minimum Balance</span>
+                <strong>
+                    ₹{{ "%.2f"|format(wallet.minimum_balance|float) }}
+                </strong>
+            </div>
+
+            <div>
+                <span>Recoverable Surplus</span>
+                <strong class="highlight-value">
+                    ₹{{ "%.2f"|format(stranded_balance|float) }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <form method="POST" novalidate>
+
+            {{ form.hidden_tag() }}
+
+            <div class="form-group">
+
+                {{ form.amount.label }}
+
+                {{ form.amount(
+                    class="form-control",
+                    placeholder="Enter recovery amount",
+                    min="0.01",
+                    step="0.01"
+                ) }}
+
+                {% for error in form.amount.errors %}
+                    <small class="form-error">
+                        {{ error }}
+                    </small>
+                {% endfor %}
+
+                <small class="form-help">
+                    Enter an amount up to the available recoverable
+                    surplus of
+                    ₹{{ "%.2f"|format(stranded_balance|float) }}.
+                </small>
+
+            </div>
+
+
+            <div class="form-group">
+
+                {{ form.recovery_option_id.label }}
+
+                {{ form.recovery_option_id(
+                    class="form-control"
+                ) }}
+
+                {% for error in form.recovery_option_id.errors %}
+                    <small class="form-error">
+                        {{ error }}
+                    </small>
+                {% endfor %}
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <a
+                    href="{{ url_for('recovery.options') }}"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </a>
+
+                {{ form.submit(
+                    class="btn btn-primary"
+                ) }}
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- RIGHT: INFORMATION -->
+    <aside class="side-info-card">
+
+        <div class="side-info-icon">
+            ↗
+        </div>
+
+        <p class="eyebrow">HOW IT WORKS</p>
+
+        <h3>Recover only what is available</h3>
+
+        <p>
+            The system allows you to recover the surplus amount
+            while keeping the wallet at or above its required
+            minimum balance.
+        </p>
+
+        <div class="privacy-check">
+            <span>✓</span>
+            <div>
+                <strong>Wallet protected</strong>
+                <small>
+                    Your wallet balance remains above the
+                    required minimum.
+                </small>
+            </div>
+        </div>
+
+        <div class="privacy-check">
+            <span>✓</span>
+            <div>
+                <strong>Tracked automatically</strong>
+                <small>
+                    Every recovery is recorded in your wallet
+                    transaction history.
+                </small>
+            </div>
+        </div>
+
+        <div class="privacy-check">
+            <span>✓</span>
+            <div>
+                <strong>Personal account</strong>
+                <small>
+                    Recovery actions are limited to your own
+                    wallet data.
+                </small>
+            </div>
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+
+{% block title %}Retrieve Trapped Value - Wallet Recovery{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <p class="eyebrow">WALLET CONSOLIDATION</p>
+        <h1>Retrieve Trapped Value</h1>
+        <p>
+            Recover the remaining balance from a wallet marked
+            for exit or consolidation.
+        </p>
+    </div>
+
+    <a
+        href="{{ url_for('wallets.index') }}"
+        class="btn btn-secondary"
+    >
+        ← Back to Wallets
+    </a>
+</div>
+
+
+<div class="form-layout">
+
+    <!-- LEFT: EXIT RECOVERY -->
+    <section class="content-card">
+
+        <div class="card-heading">
+            <div>
+                <p class="eyebrow">WALLET EXIT</p>
+                <h2>{{ wallet.name }}</h2>
+                <p>{{ wallet.provider }}</p>
+            </div>
+
+            <span class="status-pill status-warning">
+                Exit Requested
+            </span>
+        </div>
+
+
+        <div class="wallet-summary-banner">
+
+            <div>
+                <span>Current Balance</span>
+                <strong>
+                    ₹{{ "%.2f"|format(wallet.balance|float) }}
+                </strong>
+            </div>
+
+            <div>
+                <span>Minimum Balance</span>
+                <strong>
+                    ₹{{ "%.2f"|format(wallet.minimum_balance|float) }}
+                </strong>
+            </div>
+
+            <div>
+                <span>Trapped Value</span>
+                <strong class="highlight-value">
+                    ₹{{ "%.2f"|format(trapped_value|float) }}
+                </strong>
+            </div>
+
+        </div>
+
+
+        <div class="warning-box">
+
+            <div class="warning-box-icon">
+                !
+            </div>
+
+            <div>
+                <strong>Important before continuing</strong>
+
+                <p>
+                    Retrieving the trapped value will complete the
+                    wallet exit process. The wallet balance will be
+                    reduced to zero and the wallet will be marked
+                    as exited.
+                </p>
+            </div>
+
+        </div>
+
+
+        <form method="POST" novalidate>
+
+            {{ form.hidden_tag() }}
+
+            <div class="confirmation-panel">
+
+                <div>
+                    <span class="eyebrow">
+                        AMOUNT TO RECOVER
+                    </span>
+
+                    <strong class="confirmation-amount">
+                        ₹{{ "%.2f"|format(trapped_value|float) }}
+                    </strong>
+
+                    <p>
+                        This is the current balance available for
+                        the exit recovery operation.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <a
+                    href="{{ url_for('wallets.index') }}"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </a>
+
+                {{ form.submit(
+                    class="btn btn-primary"
+                ) }}
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- RIGHT: INFORMATION -->
+    <aside class="side-info-card">
+
+        <div class="side-info-icon">
+            ✓
+        </div>
+
+        <p class="eyebrow">EXIT RECOVERY</p>
+
+        <h3>What happens next?</h3>
+
+        <p>
+            The trapped value is moved through the project's
+            wallet-consolidation recovery flow.
+        </p>
+
+        <div class="privacy-check">
+            <span>1</span>
+            <div>
+                <strong>Balance recovered</strong>
+                <small>
+                    The available wallet balance is recorded as
+                    an exit recovery transaction.
+                </small>
+            </div>
+        </div>
+
+        <div class="privacy-check">
+            <span>2</span>
+            <div>
+                <strong>Wallet closed</strong>
+                <small>
+                    The wallet status changes to exited after
+                    successful recovery.
+                </small>
+            </div>
+        </div>
+
+        <div class="privacy-check">
+            <span>3</span>
+            <div>
+                <strong>Activity recorded</strong>
+                <small>
+                    The operation remains available in your
+                    recovery and wallet transaction history.
+                </small>
+            </div>
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

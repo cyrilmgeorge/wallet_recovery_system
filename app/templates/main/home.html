@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Wallet Recovery · Recover Trapped Digital Value
+{% endblock %}
+
+{% block public_content %}
+
+<section class="hero-section">
+
+    <div class="hero-copy">
+
+        <span class="eyebrow">
+            SMART WALLET RECOVERY
+        </span>
+
+        <h1 class="hero-title">
+            Recover value trapped across your digital wallets.
+        </h1>
+
+        <p class="hero-description">
+            Wallet Recovery System helps you identify unused or stranded
+            wallet balances and explore permitted ways to convert that value
+            into useful rewards, vouchers, or simulated wallet credits.
+        </p>
+
+        <div class="hero-actions">
+
+            <a
+                href="{{ url_for('auth.login') }}"
+                class="btn btn-primary btn-large"
+            >
+                Login
+            </a>
+
+            <a
+                href="{{ url_for('auth.register') }}"
+                class="btn btn-secondary btn-large"
+            >
+                Create Account
+            </a>
+
+        </div>
+
+        <div class="hero-note">
+
+            <span class="hero-note-icon">
+                ✓
+            </span>
+
+            <span>
+                Your wallets and recovery activity remain isolated to your account.
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="hero-visual">
+
+        <div class="hero-orbit orbit-one"></div>
+        <div class="hero-orbit orbit-two"></div>
+
+        <div class="wallet-illustration">
+
+            <div class="wallet-back"></div>
+
+            <div class="wallet-main">
+
+                <div class="wallet-top">
+                    <span class="wallet-brand-dot"></span>
+                    <span class="wallet-brand-line"></span>
+                </div>
+
+                <div class="wallet-card-number">
+                    •••• &nbsp; •••• &nbsp; •••• &nbsp; 4821
+                </div>
+
+                <div class="wallet-card-bottom">
+                    <span>DIGITAL WALLET</span>
+                    <span>₹</span>
+                </div>
+
+            </div>
+
+            <div class="floating-bubble bubble-rupee">
+                ₹
+            </div>
+
+            <div class="floating-bubble bubble-gift">
+                ✦
+            </div>
+
+            <div class="floating-bubble bubble-percent">
+                %
+            </div>
+
+            <div class="floating-bubble bubble-wallet">
+                ▣
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="home-section">
+
+    <div class="section-heading center-heading">
+
+        <span class="eyebrow">
+            SIMPLE PROCESS
+        </span>
+
+        <h2>
+            How It Works
+        </h2>
+
+        <p>
+            Manage fragmented balances across your wallets from one place.
+        </p>
+
+    </div>
+
+
+    <div class="steps-grid">
+
+        <article class="step-card">
+
+            <div class="step-number">
+                01
+            </div>
+
+            <div class="step-icon">
+                +
+            </div>
+
+            <h3>
+                Add Your Wallets
+            </h3>
+
+            <p>
+                Add your simulated digital wallets and their current and
+                required minimum balances.
+            </p>
+
+        </article>
+
+
+        <article class="step-card">
+
+            <div class="step-number">
+                02
+            </div>
+
+            <div class="step-icon">
+                ◇
+            </div>
+
+            <h3>
+                Identify Stranded Value
+            </h3>
+
+            <p>
+                The system calculates the amount available above each wallet's
+                required minimum balance.
+            </p>
+
+        </article>
+
+
+        <article class="step-card">
+
+            <div class="step-number">
+                03
+            </div>
+
+            <div class="step-icon">
+                ✓
+            </div>
+
+            <h3>
+                Recover Useful Value
+            </h3>
+
+            <p>
+                Choose from available recovery options and keep a record of
+                every recovery transaction.
+            </p>
+
+        </article>
+
+    </div>
+
+</section>
+
+
+<section class="security-section">
+
+    <div class="security-card">
+
+        <div class="security-icon">
+            ✓
+        </div>
+
+        <div>
+
+            <span class="security-label">
+                PRIVACY & DATA ISOLATION
+            </span>
+
+            <h2>
+                Your Data Is Isolated
+            </h2>
+
+            <p>
+                Every account has its own profile, wallets, stranded balances,
+                and recovery transactions. Users can access only their own
+                information.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<section class="home-cta">
+
+    <div class="cta-content">
+
+        <span class="eyebrow">
+            GET STARTED
+        </span>
+
+        <h2>
+            Take control of fragmented wallet balances.
+        </h2>
+
+        <p>
+            Create an account, add your wallets, and start understanding where
+            recoverable value exists.
+        </p>
+
+        <a
+            href="{{ url_for('auth.register') }}"
+            class="btn btn-primary btn-large"
+        >
+            Create Your Account
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

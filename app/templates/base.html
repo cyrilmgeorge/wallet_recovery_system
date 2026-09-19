@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}
+            Wallet Recovery System
+        {% endblock %}
+    </title>
+
+    <meta
+        name="description"
+        content="Manage digital wallets, review recoverable value, and track wallet recovery activity."
+    >
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+    <script
+        src="{{ url_for('static', filename='js/main.js') }}"
+        defer
+    ></script>
+
+    {% block head %}{% endblock %}
+</head>
+
+<body
+    class="{% if current_user.is_authenticated %}app-body{% else %}public-body{% endif %}"
+>
+
+{% if current_user.is_authenticated %}
+
+    <!-- =========================================================
+         AUTHENTICATED APPLICATION
+         ========================================================= -->
+
+    <div class="app-shell">
+
+        <!-- SIDEBAR -->
+        <aside
+            class="sidebar"
+            id="app-sidebar"
+        >
+
+            <div class="sidebar-brand">
+
+                <a
+                    href="{{ url_for('main.dashboard') }}"
+                    class="brand-mark"
+                    aria-label="Wallet Recovery dashboard"
+                >
+
+                    <span class="brand-icon">
+                        W
+                    </span>
+
+                    <span class="brand-name">
+                        <strong>Wallet</strong>
+                        <strong>Recovery</strong>
+                    </span>
+
+                </a>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+            <nav
+                class="sidebar-nav"
+                aria-label="Application navigation"
+            >
+
+                <a
+                    href="{{ url_for('main.dashboard') }}"
+                    class="side-link
+                    {% if request.endpoint == 'main.dashboard' %}
+                        active
+                    {% endif %}"
+                >
+                    <span class="side-icon">▦</span>
+                    <span>Dashboard</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('main.profile') }}"
+                    class="side-link
+                    {% if request.endpoint == 'main.profile' %}
+                        active
+                    {% endif %}"
+                >
+                    <span class="side-icon">◉</span>
+                    <span>Profile</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('wallets.index') }}"
+                    class="side-link
+                    {% if request.endpoint in [
+                        'wallets.index',
+                        'wallets.add',
+                        'wallets.add_money',
+                        'wallets.transactions'
+                    ] %}
+                        active
+                    {% endif %}"
+                >
+                    <span class="side-icon">▣</span>
+                    <span>Wallets</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('wallets.stranded') }}"
+                    class="side-link
+                    {% if request.endpoint == 'wallets.stranded' %}
+                        active
+                    {% endif %}"
+                >
+                    <span class="side-icon">◈</span>
+                    <span>Stranded Balance</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('recovery.options') }}"
+                    class="side-link
+                    {% if request.endpoint in [
+                        'recovery.options',
+                        'recovery.request_recovery',
+                        'recovery.exit_recovery'
+                    ] %}
+                        active
+                    {% endif %}"
+                >
+                    <span class="side-icon">↗</span>
+                    <span>Recovery</span>
+                </a>
+
+
+                <a
+                    href="{{ url_for('recovery.transactions') }}"
+                    class="side-link
+                    {% if request.endpoint == 'recovery.transactions' %}
+                        active
+                    {% endif %}"
+                >
+                    <span class="side-icon">≡</span>
+                    <span>Transactions</span>
+                </a>
+
+            </nav>
+
+
+            <!-- SIDEBAR FOOTER -->
+            <div class="sidebar-bottom">
+
+                <div class="sidebar-user">
+
+                    <div class="avatar">
+                        {{ current_user.username[:1]|upper }}
+                    </div>
+
+                    <div class="sidebar-user-copy">
+
+                        <strong>
+                            {{ current_user.username }}
+                        </strong>
+
+                        <span>
+                            Personal account
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <a
+                    href="{{ url_for('auth.logout') }}"
+                    class="side-link logout-link"
+                >
+                    <span class="side-icon">↪</span>
+                    <span>Logout</span>
+                </a>
+
+            </div>
+
+        </aside>
+
+
+        <!-- MAIN APPLICATION AREA -->
+        <div class="app-content">
+
+            <!-- TOP HEADER -->
+            <header class="app-header">
+
+                <div class="header-left">
+
+                    <button
+                        class="mobile-menu"
+                        id="menu-toggle"
+                        type="button"
+                        aria-controls="app-sidebar"
+                        aria-expanded="false"
+                    >
+                        ☰
+                    </button>
+
+                    <div>
+
+                        <p class="eyebrow">
+                            DIGITAL WALLET TOOLING
+                        </p>
+
+                        <h1>
+                            {% block page_heading %}
+                                Wallet Recovery
+                            {% endblock %}
+                        </h1>
+
+                    </div>
+
+                </div>
+
+
+                <div class="header-actions">
+
+                    <span class="header-greeting">
+                        Welcome, {{ current_user.username }}
+                    </span>
+
+                    <span class="avatar avatar-small">
+                        {{ current_user.username[:1]|upper }}
+                    </span>
+
+                </div>
+
+            </header>
+
+
+            <!-- FLASH MESSAGES -->
+            <div class="page-container">
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+
+                    {% if messages %}
+
+                        <div class="flash-stack">
+
+                            {% for category, message in messages %}
+
+                                <div class="flash flash-{{ category }}">
+
+                                    <span>
+                                        {{ message }}
+                                    </span>
+
+                                    <button
+                                        type="button"
+                                        class="flash-close"
+                                        aria-label="Dismiss message"
+                                    >
+                                        ×
+                                    </button>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+                {% endwith %}
+
+
+                {% block content %}{% endblock %}
+
+            </div>
+
+
+            <footer class="app-footer">
+                Wallet Recovery System
+            </footer>
+
+        </div>
+
+    </div>
+
+
+{% else %}
+
+    <!-- =========================================================
+         PUBLIC APPLICATION
+         ========================================================= -->
+
+    <header class="public-header">
+
+        <a
+            href="{{ url_for('main.home') }}"
+            class="public-brand"
+        >
+
+            <span class="brand-icon">
+                W
+            </span>
+
+            <span>
+                Wallet Recovery
+            </span>
+
+        </a>
+
+
+        <nav class="public-nav">
+
+            <a
+                href="{{ url_for('auth.login') }}"
+                class="public-link"
+            >
+                Login
+            </a>
+
+            <a
+                href="{{ url_for('auth.register') }}"
+                class="public-button"
+            >
+                Register
+            </a>
+
+        </nav>
+
+    </header>
+
+
+    <!-- PUBLIC FLASH MESSAGES -->
+    <div class="public-flash-wrap">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div class="flash-stack">
+
+                    {% for category, message in messages %}
+
+                        <div class="flash flash-{{ category }}">
+
+                            <span>
+                                {{ message }}
+                            </span>
+
+                            <button
+                                type="button"
+                                class="flash-close"
+                                aria-label="Dismiss message"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+    </div>
+
+
+    <main class="public-main">
+
+        {% block public_content %}{% endblock %}
+
+    </main>
+
+
+    <footer class="public-footer">
+        Wallet Recovery System
+    </footer>
+
+{% endif %}
+
+</body>
+</html>

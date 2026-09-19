@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Page Not Found · Wallet Recovery
+{% endblock %}
+
+{% block content %}
+
+<section class="error-page">
+
+    <div class="error-card">
+
+        <div class="error-code">
+            404
+        </div>
+
+        <span class="eyebrow">
+            PAGE NOT FOUND
+        </span>
+
+        <h1>
+            We couldn't find that page.
+        </h1>
+
+        <p>
+            The page may have been moved, removed, or the address may be
+            incorrect.
+        </p>
+
+        <div class="error-actions">
+
+            {% if current_user.is_authenticated %}
+
+                <a
+                    href="{{ url_for('main.dashboard') }}"
+                    class="btn btn-primary"
+                >
+                    Back to Dashboard
+                </a>
+
+            {% else %}
+
+                <a
+                    href="{{ url_for('main.home') }}"
+                    class="btn btn-primary"
+                >
+                    Go Home
+                </a>
+
+            {% endif %}
+
+            <a
+                href="{{ url_for('wallets.index') if current_user.is_authenticated else url_for('auth.login') }}"
+                class="btn btn-secondary"
+            >
+                Continue
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

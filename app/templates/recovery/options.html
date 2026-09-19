@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Recovery Options · Wallet Recovery
+{% endblock %}
+
+{% block page_heading %}
+    Recovery Options
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header-row">
+
+    <div>
+
+        <span class="eyebrow">
+            VALUE RECOVERY
+        </span>
+
+        <h1 class="page-title">
+            Recovery Options
+        </h1>
+
+        <p class="page-subtitle">
+            Choose a wallet and recovery method for your remaining
+            recoverable value.
+        </p>
+
+    </div>
+
+    <a
+        href="{{ url_for('wallets.stranded') }}"
+        class="btn btn-secondary btn-large"
+    >
+        View Wallet Analysis
+    </a>
+
+</div>
+
+
+<!-- =========================================================
+     REMAINING RECOVERABLE
+     ========================================================= -->
+
+<section class="recovery-total-card">
+
+    <div class="recovery-total-icon">
+        ₹
+    </div>
+
+    <div>
+
+        <span class="recovery-total-label">
+            Remaining Recoverable Balance
+        </span>
+
+        <strong class="recovery-total-value">
+            ₹{{ "%.2f"|format(total_stranded|float) }}
+        </strong>
+
+        <p>
+            This is the current value available for surplus recovery
+            without reducing an active wallet below its minimum balance.
+        </p>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     RECOVERABLE WALLETS
+     ========================================================= -->
+
+<div class="recovery-section-heading">
+
+    <div>
+
+        <span class="eyebrow">
+            YOUR WALLETS
+        </span>
+
+        <h2>
+            Recoverable Wallets
+        </h2>
+
+        <p>
+            Select a wallet with remaining recoverable value.
+        </p>
+
+    </div>
+
+</div>
+
+
+{% if wallet_data %}
+
+<div class="recoverable-wallet-list">
+
+    {% for item in wallet_data %}
+
+        {% set wallet = item.wallet %}
+
+        <article class="recoverable-wallet-card">
+
+            <div class="recoverable-wallet-identity">
+
+                <div class="wallet-avatar">
+                    {{ wallet.name[:2]|upper }}
+                </div>
+
+                <div>
+
+                    <h3>
+                        {{ wallet.name }}
+                    </h3>
+
+                    <p>
+                        Provider: {{ wallet.provider }}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="recoverable-wallet-amount">
+
+                <span>
+                    Remaining Recoverable
+                </span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(
+                        item.remaining_recoverable|float
+                    ) }}
+                </strong>
+
+            </div>
+
+
+            <a
+                href="{{ url_for(
+                    'recovery.request_recovery',
+                    wallet_id=wallet.id
+                ) }}"
+                class="btn btn-primary"
+            >
+                Recover From This Wallet
+            </a>
+
+        </article>
+
+    {% endfor %}
+
+</div>
+
+
+{% else %}
+
+<div class="empty-state">
+
+    <div class="empty-wallet-icon">
+        ✓
+    </div>
+
+    <h3>
+        No recoverable wallet balance
+    </h3>
+
+    <p>
+        There is currently no remaining surplus available for recovery
+        from your active wallets.
+    </p>
+
+    <a
+        href="{{ url_for('wallets.index') }}"
+        class="btn btn-primary"
+    >
+        View My Wallets
+    </a>
+
+</div>
+
+{% endif %}
+
+
+<!-- =========================================================
+     AVAILABLE RECOVERY METHODS
+     ========================================================= -->
+
+<div class="recovery-section-heading recovery-method-heading">
+
+    <div>
+
+        <span class="eyebrow">
+            AVAILABLE METHODS
+        </span>
+
+        <h2>
+            Recovery Methods
+        </h2>
+
+        <p>
+            These are the currently available project recovery options.
+        </p>
+
+    </div>
+
+</div>
+
+
+<div class="recovery-method-grid">
+
+    {% for option in recovery_options %}
+
+        {% set option_lower =
+            option.name|lower
+        %}
+
+        <article class="recovery-method-card">
+
+            <div class="recovery-method-icon">
+
+                {% if "reward" in option_lower %}
+                    ✦
+                {% elif "voucher" in option_lower %}
+                    ▣
+                {% else %}
+                    ◇
+                {% endif %}
+
+            </div>
+
+            <h3>
+                {{ option.name }}
+            </h3>
+
+            <p>
+                {{ option.description }}
+            </p>
+
+        </article>
+
+    {% endfor %}
+
+</div>
+
+
+<!-- =========================================================
+     PROJECT NOTICE
+     ========================================================= -->
+
+<div class="recovery-notice">
+
+    <div class="recovery-notice-icon">
+        i
+    </div>
+
+    <div>
+
+        <strong>
+            Recovery is simulated within this project
+        </strong>
+
+        <p>
+            These recovery methods represent the application's permitted
+            value-conversion workflow. They do not claim that external
+            wallet providers support these operations.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

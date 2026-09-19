@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}Add Money - Wallet Recovery{% endblock %}
+
+{% block content %}
+
+<div
+    class="page-header"
+    style="
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 24px;
+    "
+>
+
+    <div>
+
+        <p class="eyebrow">WALLET ACTIVITY</p>
+
+        <h1>Add Money</h1>
+
+        <p>
+            Add funds to your active wallet and record the activity.
+        </p>
+
+    </div>
+
+
+    <div style="flex-shrink: 0;">
+
+        <a
+            href="{{ url_for('wallets.index') }}"
+            class="btn btn-secondary"
+        >
+            ← Back to Wallets
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="form-layout">
+
+    <!-- FORM -->
+
+    <section class="content-card">
+
+        <div class="card-heading">
+
+            <div>
+
+                <p class="eyebrow">
+                    ADD FUNDS
+                </p>
+
+                <h2>
+                    {{ wallet.name }}
+                </h2>
+
+                <p>
+                    {{ wallet.provider }}
+                </p>
+
+            </div>
+
+
+            <span class="status-pill status-active">
+                Active
+            </span>
+
+        </div>
+
+
+        <!-- WALLET SUMMARY -->
+
+        <div class="wallet-summary-banner">
+
+            <div>
+
+                <span>
+                    Current Balance
+                </span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(wallet.balance|float) }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Minimum Balance
+                </span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(wallet.minimum_balance|float) }}
+                </strong>
+
+            </div>
+
+
+            <div>
+
+                <span>
+                    Provider
+                </span>
+
+                <strong>
+                    {{ wallet.provider }}
+                </strong>
+
+            </div>
+
+        </div>
+
+
+        <form method="POST" novalidate>
+
+            {{ form.hidden_tag() }}
+
+
+            <div class="form-group">
+
+                {{ form.amount.label }}
+
+                {{ form.amount(
+                    class="form-control",
+                    placeholder="Enter amount",
+                    min="0.01",
+                    step="0.01"
+                ) }}
+
+                {% for error in form.amount.errors %}
+
+                    <small class="form-error">
+                        {{ error }}
+                    </small>
+
+                {% endfor %}
+
+                <small class="form-help">
+                    Enter the amount you want to add to this wallet.
+                </small>
+
+            </div>
+
+
+            <div class="form-group">
+
+                {{ form.description.label }}
+
+                {{ form.description(
+                    class="form-control",
+                    placeholder="e.g. Monthly wallet top-up"
+                ) }}
+
+                {% for error in form.description.errors %}
+
+                    <small class="form-error">
+                        {{ error }}
+                    </small>
+
+                {% endfor %}
+
+                <small class="form-help">
+                    Add a short description so the activity can
+                    be identified later.
+                </small>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <a
+                    href="{{ url_for('wallets.index') }}"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </a>
+
+
+                {{ form.submit(
+                    class="btn btn-primary"
+                ) }}
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- INFORMATION -->
+
+    <aside class="side-info-card">
+
+        <div class="side-info-icon">
+            ₹
+        </div>
+
+        <p class="eyebrow">
+            WALLET FUNDING
+        </p>
+
+        <h3>
+            Keep your wallet activity organized
+        </h3>
+
+        <p>
+            Every successful deposit is recorded in the wallet's
+            activity history.
+        </p>
+
+
+        <div class="privacy-check">
+
+            <span>✓</span>
+
+            <div>
+
+                <strong>
+                    Balance updated
+                </strong>
+
+                <small>
+                    The added amount is reflected in the wallet's
+                    current balance.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="privacy-check">
+
+            <span>✓</span>
+
+            <div>
+
+                <strong>
+                    Activity recorded
+                </strong>
+
+                <small>
+                    The deposit is stored as a wallet transaction
+                    with its description.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="privacy-check">
+
+            <span>✓</span>
+
+            <div>
+
+                <strong>
+                    Recovery recalculated
+                </strong>
+
+                <small>
+                    Your recoverable wallet value updates with
+                    the new balance.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="recovery-notice">
+
+            <strong>
+                Active wallet only
+            </strong>
+
+            <p>
+                Money can only be added while this wallet is in
+                the active state.
+            </p>
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,313 @@
+{% extends "base.html" %}
+
+{% block title %}Add Wallet - Wallet Recovery{% endblock %}
+
+{% block content %}
+
+<div
+    class="page-header"
+    style="
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 24px;
+    "
+>
+
+    <div>
+
+        <p class="eyebrow">WALLETS</p>
+
+        <h1>Add Wallet</h1>
+
+        <p>
+            Add a wallet to your personal recovery workspace.
+        </p>
+
+    </div>
+
+
+    <div style="flex-shrink: 0;">
+
+        <a
+            href="{{ url_for('wallets.index') }}"
+            class="btn btn-secondary"
+        >
+            ← Back to Wallets
+        </a>
+
+    </div>
+
+</div>
+
+
+<div class="form-layout">
+
+    <!-- FORM -->
+
+    <section class="content-card">
+
+        <div class="card-heading">
+
+            <div>
+
+                <p class="eyebrow">
+                    WALLET DETAILS
+                </p>
+
+                <h2>
+                    Create a wallet
+                </h2>
+
+                <p>
+                    Enter the current balance and required minimum
+                    balance for this wallet.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <form method="POST" novalidate>
+
+            {{ form.hidden_tag() }}
+
+
+            <div class="form-group">
+
+                {{ form.name.label }}
+
+                {{ form.name(
+                    class="form-control",
+                    placeholder="e.g. Food Wallet"
+                ) }}
+
+                {% for error in form.name.errors %}
+
+                    <small class="form-error">
+                        {{ error }}
+                    </small>
+
+                {% endfor %}
+
+            </div>
+
+
+            <div class="form-group">
+
+                {{ form.provider.label }}
+
+                {{ form.provider(
+                    class="form-control",
+                    placeholder="e.g. Swiggy"
+                ) }}
+
+                {% for error in form.provider.errors %}
+
+                    <small class="form-error">
+                        {{ error }}
+                    </small>
+
+                {% endfor %}
+
+            </div>
+
+
+            <div
+                style="
+                    display: grid;
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                    gap: 18px;
+                "
+            >
+
+                <div class="form-group">
+
+                    {{ form.balance.label }}
+
+                    {{ form.balance(
+                        class="form-control",
+                        placeholder="0.00",
+                        min="0",
+                        step="0.01"
+                    ) }}
+
+                    {% for error in form.balance.errors %}
+
+                        <small class="form-error">
+                            {{ error }}
+                        </small>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <div class="form-group">
+
+                    {{ form.minimum_balance.label }}
+
+                    {{ form.minimum_balance(
+                        class="form-control",
+                        placeholder="0.00",
+                        min="0",
+                        step="0.01"
+                    ) }}
+
+                    {% for error in form.minimum_balance.errors %}
+
+                        <small class="form-error">
+                            {{ error }}
+                        </small>
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+            <div class="checkbox-card">
+
+                {{ form.exit_requested(
+                    class="checkbox-input"
+                ) }}
+
+                <div>
+
+                    <strong>
+                        {{ form.exit_requested.label.text }}
+                    </strong>
+
+                    <small>
+                        Use this when the wallet is already being
+                        prepared for exit or consolidation.
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <a
+                    href="{{ url_for('wallets.index') }}"
+                    class="btn btn-secondary"
+                >
+                    Cancel
+                </a>
+
+
+                {{ form.submit(
+                    class="btn btn-primary"
+                ) }}
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- INFORMATION -->
+
+    <aside class="side-info-card">
+
+        <div class="side-info-icon">
+            +
+        </div>
+
+        <p class="eyebrow">
+            WALLET SETUP
+        </p>
+
+        <h3>
+            Keep your wallet information accurate
+        </h3>
+
+        <p>
+            The system uses the current and minimum balances
+            to determine how much value may be recoverable.
+        </p>
+
+
+        <div class="privacy-check">
+
+            <span>✓</span>
+
+            <div>
+
+                <strong>
+                    Current balance
+                </strong>
+
+                <small>
+                    Enter the balance currently available
+                    in the wallet.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="privacy-check">
+
+            <span>✓</span>
+
+            <div>
+
+                <strong>
+                    Minimum balance
+                </strong>
+
+                <small>
+                    Enter the amount that must remain in the
+                    wallet.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="privacy-check">
+
+            <span>✓</span>
+
+            <div>
+
+                <strong>
+                    Recovery calculation
+                </strong>
+
+                <small>
+                    Recoverable surplus is calculated from
+                    these two values.
+                </small>
+
+            </div>
+
+        </div>
+
+
+        <div class="recovery-notice">
+
+            <strong>
+                Important
+            </strong>
+
+            <p>
+                The minimum balance cannot be greater than
+                the current balance.
+            </p>
+
+        </div>
+
+    </aside>
+
+</div>
+
+{% endblock %}

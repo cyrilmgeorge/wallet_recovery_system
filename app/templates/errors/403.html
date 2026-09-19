@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Access Denied · Wallet Recovery
+{% endblock %}
+
+{% block content %}
+
+<section class="error-page">
+
+    <div class="error-card">
+
+        <div class="error-code">
+            403
+        </div>
+
+        <span class="eyebrow">
+            ACCESS RESTRICTED
+        </span>
+
+        <h1>
+            You don't have access to this page.
+        </h1>
+
+        <p>
+            This resource is not available for your current account or session.
+            Wallet Recovery keeps user information isolated between accounts.
+        </p>
+
+        <div class="error-actions">
+
+            {% if current_user.is_authenticated %}
+
+                <a
+                    href="{{ url_for('main.dashboard') }}"
+                    class="btn btn-primary"
+                >
+                    Back to Dashboard
+                </a>
+
+            {% else %}
+
+                <a
+                    href="{{ url_for('auth.login') }}"
+                    class="btn btn-primary"
+                >
+                    Login
+                </a>
+
+            {% endif %}
+
+            <a
+                href="{{ url_for('main.home') }}"
+                class="btn btn-secondary"
+            >
+                Go Home
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

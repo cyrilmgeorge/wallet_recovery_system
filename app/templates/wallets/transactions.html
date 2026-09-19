@@ -1,0 +1,420 @@
+{% extends "base.html" %}
+
+{% block title %}Wallet Activity - Wallet Recovery{% endblock %}
+
+{% block content %}
+
+{% set total_transaction_value = namespace(value=0) %}
+
+{% for transaction in transactions %}
+    {% set total_transaction_value.value =
+        total_transaction_value.value + transaction.amount|float %}
+{% endfor %}
+
+
+<!-- PAGE HEADER -->
+
+<div
+    class="page-header"
+    style="
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 24px;
+    "
+>
+
+    <div>
+
+        <p class="eyebrow">WALLET ACTIVITY</p>
+
+        <h1>{{ wallet.name }}</h1>
+
+        <p>
+            Review the complete activity history for this wallet.
+        </p>
+
+    </div>
+
+
+    <div style="flex-shrink: 0;">
+
+        <a
+            href="{{ url_for('wallets.index') }}"
+            class="btn btn-secondary"
+        >
+            ← Back to Wallets
+        </a>
+
+    </div>
+
+</div>
+
+
+<!-- WALLET SUMMARY -->
+
+<div class="metric-grid">
+
+    <div class="metric-card">
+
+        <div class="metric-icon">₹</div>
+
+        <span>Current Balance</span>
+
+        <strong>
+            ₹{{ "%.2f"|format(wallet.balance|float) }}
+        </strong>
+
+        <small>
+            Current wallet balance
+        </small>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <div class="metric-icon">▣</div>
+
+        <span>Minimum Balance</span>
+
+        <strong>
+            ₹{{ "%.2f"|format(wallet.minimum_balance|float) }}
+        </strong>
+
+        <small>
+            Required wallet minimum
+        </small>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <div class="metric-icon">≡</div>
+
+        <span>Total Activities</span>
+
+        <strong>
+            {{ transactions|length }}
+        </strong>
+
+        <small>
+            Recorded wallet events
+        </small>
+
+    </div>
+
+
+    <div class="metric-card">
+
+        <div class="metric-icon">✓</div>
+
+        <span>Wallet Status</span>
+
+        <strong style="font-size: 18px;">
+            {{ wallet.status|replace("_", " ")|title }}
+        </strong>
+
+        <small>
+            Current wallet state
+        </small>
+
+    </div>
+
+</div>
+
+
+<!-- WALLET INFORMATION -->
+
+<section class="content-card">
+
+    <div class="card-heading">
+
+        <div>
+
+            <p class="eyebrow">
+                WALLET
+            </p>
+
+            <h2>
+                Wallet Details
+            </h2>
+
+        </div>
+
+
+        {% if wallet.status == "active" %}
+
+            <span class="status-pill status-active">
+                Active
+            </span>
+
+        {% elif wallet.status == "exit_requested" %}
+
+            <span class="status-pill status-warning">
+                Exit Requested
+            </span>
+
+        {% else %}
+
+            <span class="status-pill">
+                Exited
+            </span>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="wallet-summary-banner">
+
+        <div>
+
+            <span>
+                Provider
+            </span>
+
+            <strong>
+                {{ wallet.provider }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Wallet ID
+            </span>
+
+            <strong>
+                #{{ wallet.id }}
+            </strong>
+
+        </div>
+
+
+        <div>
+
+            <span>
+                Activity Records
+            </span>
+
+            <strong>
+                {{ transactions|length }}
+            </strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- TRANSACTION HISTORY -->
+
+<section class="content-card table-card">
+
+    <div class="card-heading">
+
+        <div>
+
+            <p class="eyebrow">
+                ACTIVITY
+            </p>
+
+            <h2>
+                Transaction History
+            </h2>
+
+        </div>
+
+
+        <span class="record-count">
+
+            {{ transactions|length }}
+
+            record{% if transactions|length != 1 %}s{% endif %}
+
+        </span>
+
+    </div>
+
+
+    {% if transactions %}
+
+        <div class="table-wrap">
+
+            <table class="data-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Type
+                        </th>
+
+                        <th>
+                            Amount
+                        </th>
+
+                        <th>
+                            Balance After
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th>
+                            Date
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for transaction in transactions %}
+
+                    <tr>
+
+                        <td>
+
+                            {% if transaction.transaction_type == "initial_balance" %}
+
+                                <span class="type-badge type-surplus">
+                                    Initial Balance
+                                </span>
+
+                            {% elif transaction.transaction_type == "deposit" %}
+
+                                <span class="type-badge type-surplus">
+                                    Money Added
+                                </span>
+
+                            {% elif transaction.transaction_type == "recovery" %}
+
+                                <span class="type-badge type-surplus">
+                                    Recovery
+                                </span>
+
+                            {% elif transaction.transaction_type == "exit_recovery" %}
+
+                                <span class="type-badge type-exit">
+                                    Exit Recovery
+                                </span>
+
+                            {% else %}
+
+                                <span class="type-badge">
+                                    {{ transaction.transaction_type|replace("_", " ")|title }}
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td>
+
+                            <strong class="amount-cell">
+
+                                ₹{{ "%.2f"|format(transaction.amount|float) }}
+
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+
+                            ₹{{ "%.2f"|format(transaction.balance_after|float) }}
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="table-primary">
+                                {{ transaction.description }}
+                            </div>
+
+                        </td>
+
+
+                        <td>
+
+                            <div class="table-primary">
+                                {{ transaction.created_at.strftime("%d %b %Y") }}
+                            </div>
+
+                            <div class="table-secondary">
+                                {{ transaction.created_at.strftime("%I:%M %p") }}
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    {% else %}
+
+        <div class="empty-state">
+
+            <div class="empty-state-icon">
+                ≡
+            </div>
+
+            <h3>
+                No wallet activity yet
+            </h3>
+
+            <p>
+                Transactions for this wallet will appear here
+                when money is added or recovery activity occurs.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</section>
+
+
+<!-- INFORMATION -->
+
+<div class="info-strip">
+
+    <div class="info-strip-icon">
+        ✓
+    </div>
+
+    <div>
+
+        <strong>
+            Wallet activity is account-specific
+        </strong>
+
+        <p>
+            This page only displays activity belonging to
+            {{ wallet.name }} and your currently signed-in account.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

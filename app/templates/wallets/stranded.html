@@ -1,0 +1,394 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Wallet Value Analysis · Wallet Recovery
+{% endblock %}
+
+{% block page_heading %}
+    Wallet Value Analysis
+{% endblock %}
+
+{% block content %}
+
+<div class="page-header-row">
+
+    <div>
+
+        <span class="eyebrow">
+            STRANDED BALANCE
+        </span>
+
+        <h1 class="page-title">
+            Wallet Value Analysis
+        </h1>
+
+        <p class="page-subtitle">
+            Review your recoverable surplus, recovered value, remaining
+            recoverable value, and potentially trapped wallet value.
+        </p>
+
+    </div>
+
+    <a
+        href="{{ url_for('recovery.options') }}"
+        class="btn btn-primary btn-large"
+    >
+        Recovery Options
+    </a>
+
+</div>
+
+
+<!-- =========================================================
+     SUMMARY METRICS
+     ========================================================= -->
+
+<div class="metric-grid value-metric-grid">
+
+    <article class="metric-card value-metric-green">
+
+        <span class="metric-label">
+            Recoverable Surplus
+        </span>
+
+        <strong class="metric-value">
+            ₹{{ "%.2f"|format(
+                total_original_stranded|float
+            ) }}
+        </strong>
+
+        <small>
+            Total surplus above wallet minimums
+        </small>
+
+    </article>
+
+
+    <article class="metric-card">
+
+        <span class="metric-label">
+            Total Recovered
+        </span>
+
+        <strong class="metric-value">
+            ₹{{ "%.2f"|format(
+                total_recovered|float
+            ) }}
+        </strong>
+
+        <small>
+            Value already recovered
+        </small>
+
+    </article>
+
+
+    <article class="metric-card value-metric-green">
+
+        <span class="metric-label">
+            Remaining Recoverable
+        </span>
+
+        <strong class="metric-value">
+            ₹{{ "%.2f"|format(
+                total_remaining|float
+            ) }}
+        </strong>
+
+        <small>
+            Value currently available for recovery
+        </small>
+
+    </article>
+
+
+    <article class="metric-card value-metric-warning">
+
+        <span class="metric-label">
+            Potentially Trapped Value
+        </span>
+
+        <strong class="metric-value">
+            ₹{{ "%.2f"|format(
+                total_trapped|float
+            ) }}
+        </strong>
+
+        <small>
+            Value associated with exit-requested wallets
+        </small>
+
+    </article>
+
+</div>
+
+
+<!-- =========================================================
+     WALLET ANALYSIS
+     ========================================================= -->
+
+<div class="analysis-section-header">
+
+    <div>
+        <span class="eyebrow">
+            WALLET BREAKDOWN
+        </span>
+
+        <h2>
+            Value by Wallet
+        </h2>
+
+        <p>
+            Compare each wallet's balance and recovery position.
+        </p>
+    </div>
+
+</div>
+
+
+{% if stranded_data %}
+
+<div class="analysis-grid">
+
+    {% for item in stranded_data %}
+
+        {% set wallet = item.wallet %}
+
+        <article class="analysis-card">
+
+            <!-- CARD HEADER -->
+
+            <div class="analysis-card-header">
+
+                <div class="wallet-identity">
+
+                    <div class="wallet-avatar">
+                        {{ wallet.name[:2]|upper }}
+                    </div>
+
+                    <div>
+
+                        <h3>
+                            {{ wallet.name }}
+                        </h3>
+
+                        <p>
+                            {{ wallet.provider }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <span class="status-badge status-{{ wallet.status }}">
+                    {{ wallet.status.replace("_", " ")|title }}
+                </span>
+
+            </div>
+
+
+            <!-- MAIN BALANCE -->
+
+            <div class="analysis-balance">
+
+                <span>
+                    Current Balance
+                </span>
+
+                <strong>
+                    ₹{{ "%.2f"|format(
+                        wallet.balance|float
+                    ) }}
+                </strong>
+
+                <small>
+                    Minimum balance:
+                    ₹{{ "%.2f"|format(
+                        wallet.minimum_balance|float
+                    ) }}
+                </small>
+
+            </div>
+
+
+            <!-- VALUE DETAILS -->
+
+            <div class="analysis-details">
+
+                <div class="analysis-row">
+
+                    <span>
+                        Recoverable Surplus
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(
+                            item.original_stranded|float
+                        ) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="analysis-row">
+
+                    <span>
+                        Total Recovered
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(
+                            item.recovered_amount|float
+                        ) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="analysis-row analysis-row-highlight">
+
+                    <span>
+                        Remaining Recoverable
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(
+                            item.remaining_recoverable|float
+                        ) }}
+                    </strong>
+
+                </div>
+
+
+                <div class="analysis-row">
+
+                    <span>
+                        Potentially Trapped
+                    </span>
+
+                    <strong>
+                        ₹{{ "%.2f"|format(
+                            item.trapped_value|float
+                        ) }}
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="analysis-actions">
+
+                {% if wallet.status == "active"
+                    and item.remaining_recoverable|float > 0 %}
+
+                    <a
+                        href="{{ url_for(
+                            'recovery.request_recovery',
+                            wallet_id=wallet.id
+                        ) }}"
+                        class="btn btn-primary"
+                    >
+                        Recover Surplus
+                    </a>
+
+                {% elif wallet.status == "exit_requested"
+                    and item.trapped_value|float > 0 %}
+
+                    <a
+                        href="{{ url_for(
+                            'recovery.exit_recovery',
+                            wallet_id=wallet.id
+                        ) }}"
+                        class="btn btn-primary"
+                    >
+                        Retrieve Trapped Value
+                    </a>
+
+                {% else %}
+
+                    <span class="analysis-no-action">
+                        No recovery action available
+                    </span>
+
+                {% endif %}
+
+
+                <a
+                    href="{{ url_for(
+                        'wallets.transactions',
+                        wallet_id=wallet.id
+                    ) }}"
+                    class="btn btn-secondary"
+                >
+                    View Activity
+                </a>
+
+            </div>
+
+        </article>
+
+    {% endfor %}
+
+</div>
+
+
+{% else %}
+
+<div class="empty-state">
+
+    <div class="empty-wallet-icon">
+        ◈
+    </div>
+
+    <h3>
+        No wallet data available
+    </h3>
+
+    <p>
+        Add a wallet to begin analyzing recoverable and potentially trapped
+        value.
+    </p>
+
+    <a
+        href="{{ url_for('wallets.add') }}"
+        class="btn btn-primary"
+    >
+        Add Wallet
+    </a>
+
+</div>
+
+{% endif %}
+
+
+<!-- =========================================================
+     EXPLANATION
+     ========================================================= -->
+
+<div class="analysis-help">
+
+    <div class="analysis-help-icon">
+        ?
+    </div>
+
+    <div>
+
+        <strong>
+            How the value calculation works
+        </strong>
+
+        <p>
+            Recoverable surplus is the amount above the wallet's required
+            minimum balance. Potentially trapped value is shown when a wallet
+            has been marked for exit and still contains a balance.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

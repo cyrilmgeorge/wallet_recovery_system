@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Create Account · Wallet Recovery
+{% endblock %}
+
+{% block public_content %}
+
+<section class="auth-page">
+
+    <div class="auth-card auth-card-register">
+
+        <div class="auth-header">
+
+            <span class="eyebrow">
+                GET STARTED
+            </span>
+
+            <h1>
+                Create Your Account
+            </h1>
+
+            <p>
+                Create a secure account to manage your wallets and recovery
+                activity.
+            </p>
+
+        </div>
+
+
+        <form
+            method="POST"
+            class="auth-form"
+            novalidate
+        >
+
+            {{ form.hidden_tag() }}
+
+
+            <div class="form-group">
+
+                {{ form.username.label(class="form-label") }}
+
+                {{ form.username(
+                    class="form-control",
+                    placeholder="Choose a username",
+                    autocomplete="username"
+                ) }}
+
+                {% if form.username.errors %}
+
+                    <div class="form-error">
+
+                        {% for error in form.username.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="form-group">
+
+                {{ form.email.label(class="form-label") }}
+
+                {{ form.email(
+                    class="form-control",
+                    placeholder="you@example.com",
+                    autocomplete="email"
+                ) }}
+
+                {% if form.email.errors %}
+
+                    <div class="form-error">
+
+                        {% for error in form.email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="form-group">
+
+                {{ form.password.label(class="form-label") }}
+
+                {{ form.password(
+                    class="form-control",
+                    placeholder="Create a password",
+                    autocomplete="new-password"
+                ) }}
+
+                {% if form.password.errors %}
+
+                    <div class="form-error">
+
+                        {% for error in form.password.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="form-group">
+
+                {{ form.confirm_password.label(class="form-label") }}
+
+                {{ form.confirm_password(
+                    class="form-control",
+                    placeholder="Confirm your password",
+                    autocomplete="new-password"
+                ) }}
+
+                {% if form.confirm_password.errors %}
+
+                    <div class="form-error">
+
+                        {% for error in form.confirm_password.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <div class="form-submit">
+
+                {{ form.submit(
+                    class="btn btn-primary btn-large btn-full"
+                ) }}
+
+            </div>
+
+        </form>
+
+
+        <div class="auth-footer">
+
+            <span>
+                Already have an account?
+            </span>
+
+            <a href="{{ url_for('auth.login') }}">
+                Login
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
